@@ -85,9 +85,6 @@ class _NotesScreenState extends State<NotesScreen> {
                                 ),
                                 onPressed: () {
                                   _notesBloc.add(DeleteNote(note.id));
-                                  _notesBloc =
-                                      BlocProvider.of<NotesBloc>(context);
-                                  _notesBloc.add(LoadNotes());
                                 },
                               ),
                             ],
@@ -117,8 +114,8 @@ class _NotesScreenState extends State<NotesScreen> {
     );
   }
 
-  void _navigateToAddScreen() async {
-    await Navigator.push(
+  void _navigateToAddScreen()async {
+   await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AddNoteScreen()),
     );

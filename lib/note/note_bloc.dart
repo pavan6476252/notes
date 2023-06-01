@@ -1,8 +1,9 @@
+
+
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; 
 
 import 'nnotes_model.dart';
 import 'note_event.dart';
@@ -45,6 +46,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       await firestore.collection('notes').doc(note.id).set(note.toJson());
 
       emit(NoteAdded());
+      add(LoadNotes());  
     } catch (e) {
       emit(NotesError('Failed to add note'));
     }
@@ -59,6 +61,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       await firestore.collection('notes').doc(note.id).update(note.toJson());
 
       emit(NoteUpdated());
+      add(LoadNotes()); // Reload the content after updating a note
     } catch (e) {
       emit(NotesError('Failed to update note'));
     }
@@ -71,14 +74,14 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       await firestore.collection('notes').doc(event.noteId).delete();
 
       emit(NoteDeleted());
+      add(LoadNotes());  
     } catch (e) {
       emit(NotesError('Failed to delete note'));
     }
   }
 
   @override
-  Future<void> close() {
-    // Clean up resources if needed
+  Future<void> close() {  
     return super.close();
   }
 }

@@ -19,6 +19,10 @@ class _NotesScreenState extends State<NotesScreen> {
   @override
   void initState() {
     super.initState();
+    _load();
+  }
+
+  _load() {
     _notesBloc = BlocProvider.of<NotesBloc>(context);
     _notesBloc.add(LoadNotes());
   }
@@ -81,6 +85,9 @@ class _NotesScreenState extends State<NotesScreen> {
                                 ),
                                 onPressed: () {
                                   _notesBloc.add(DeleteNote(note.id));
+                                  _notesBloc =
+                                      BlocProvider.of<NotesBloc>(context);
+                                  _notesBloc.add(LoadNotes());
                                 },
                               ),
                             ],
@@ -110,11 +117,12 @@ class _NotesScreenState extends State<NotesScreen> {
     );
   }
 
-  void _navigateToAddScreen() {
-    Navigator.push(
+  void _navigateToAddScreen() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AddNoteScreen()),
     );
+    _load();
   }
 
   void _navigateToEditScreen(Note note) {
@@ -122,6 +130,7 @@ class _NotesScreenState extends State<NotesScreen> {
       context,
       MaterialPageRoute(builder: (context) => EditNoteScreen(note)),
     );
+    _load();
   }
 }
 

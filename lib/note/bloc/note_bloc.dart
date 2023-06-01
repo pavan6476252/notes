@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; 
 
-import 'nnotes_model.dart';
+import '../../repository/nnotes_model.dart';
 import 'note_event.dart';
 import 'note_state.dart';
 

@@ -4,14 +4,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'auth/auth_bloc.dart';
+import 'auth/bloc/auth_bloc.dart';
 import 'dash_board.dart';
 import 'firebase_options.dart';
-import 'note/note_bloc.dart';
-import 'note/note_event.dart';
-import 'note/notes_page.dart';
+import 'note/bloc/note_bloc.dart'; 
 import 'repository/auth_repo.dart';
-import 'sign_in.dart';
+import 'auth/sign_in.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

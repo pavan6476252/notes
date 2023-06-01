@@ -3,17 +3,19 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'nnotes_model.dart';
-import 'note_bloc.dart';
-import 'note_event.dart';
-import 'note_state.dart';
+import 'add_note_page.dart';
+import 'edit_note_page.dart';
+import '../repository/nnotes_model.dart';
+import 'bloc/note_bloc.dart';
+import 'bloc/note_event.dart';
+import 'bloc/note_state.dart';
 
-class NotesScreen extends StatefulWidget {
+class NotesPage extends StatefulWidget {
   @override
-  _NotesScreenState createState() => _NotesScreenState();
+  _NotesPageState createState() => _NotesPageState();
 }
 
-class _NotesScreenState extends State<NotesScreen> {
+class _NotesPageState extends State<NotesPage> {
   late NotesBloc _notesBloc;
 
   @override
@@ -33,15 +35,15 @@ class _NotesScreenState extends State<NotesScreen> {
       body: BlocBuilder<NotesBloc, NotesState>(
         builder: (context, state) {
           if (state is NotesLoading) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (state is NotesLoaded) {
             return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Set the number of columns in the grid
-                crossAxisSpacing: 10.0, // Set the spacing between columns
-                mainAxisSpacing: 10.0, // Set the spacing between rows
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
               ),
               itemCount: state.notes.length,
               itemBuilder: (context, index) {
@@ -58,28 +60,44 @@ class _NotesScreenState extends State<NotesScreen> {
                   color: color,
                   child: InkWell(
                     onTap: () {
-                      _navigateToEditScreen(note);
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(state.notes[index].title),
+                              content: Text(state.notes[index].content),
+                            );
+                          });
                     },
                     child: Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             note.title,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 8.0),
-                          Text(note.content),
-                          Spacer(),
+                          const SizedBox(height: 8.0),
+                          Text(note.content,maxLines: 5),
+                          const Spacer(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                icon: Icon(
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  _navigateToEditPage(note);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(
                                   Icons.delete,
                                   color: Colors.white,
                                 ),
@@ -106,181 +124,27 @@ class _NotesScreenState extends State<NotesScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () {
-          _navigateToAddScreen();
+          _navigateToAddPage();
         },
       ),
     );
   }
 
-  void _navigateToAddScreen()async {
-   await Navigator.push(
+  void _navigateToAddPage() async {
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddNoteScreen()),
+      MaterialPageRoute(builder: (context) => AddNotePage()),
     );
     _load();
   }
 
-  void _navigateToEditScreen(Note note) {
+  void _navigateToEditPage(Note note) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EditNoteScreen(note)),
+      MaterialPageRoute(builder: (context) => EditNotePage(note)),
     );
     _load();
-  }
-}
-
-class AddNoteScreen extends StatefulWidget {
-  @override
-  _AddNoteScreenState createState() => _AddNoteScreenState();
-}
-
-class _AddNoteScreenState extends State<AddNoteScreen> {
-  final _formKey = GlobalKey<FormState>();
-  late String _title;
-  late String _content;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Note'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Title'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _title = value!;
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Content'),
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter content';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _content = value!;
-                },
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                child: Text('Save'),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    BlocProvider.of<NotesBloc>(context).add(
-                      AddNote(_title, _content),
-                    );
-                    Navigator.pop(context);
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class EditNoteScreen extends StatefulWidget {
-  final Note note;
-
-  EditNoteScreen(this.note);
-
-  @override
-  _EditNoteScreenState createState() => _EditNoteScreenState();
-}
-
-class _EditNoteScreenState extends State<EditNoteScreen> {
-  final _formKey = GlobalKey<FormState>();
-  late String _title;
-  late String _content;
-
-  @override
-  void initState() {
-    super.initState();
-    _title = widget.note.title;
-    _content = widget.note.content;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Note'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Title'),
-                initialValue: _title,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _title = value!;
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Content'),
-                initialValue: _content,
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter content';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _content = value!;
-                },
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                child: Text('Save'),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    final updatedNote = Note(
-                      id: widget.note.id,
-                      title: _title,
-                      content: _content,
-                    );
-                    BlocProvider.of<NotesBloc>(context).add(
-                      UpdateNote(updatedNote),
-                    );
-                    Navigator.pop(context);
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

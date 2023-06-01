@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/note/notes_page.dart';
 
-import 'auth/auth_bloc.dart';
-import 'auth/auth_events.dart';
-import 'note/note_bloc.dart';
-import 'sign_in.dart';
+import 'auth/bloc/auth_bloc.dart';
+import 'auth/bloc/auth_events.dart';
+import 'note/bloc/note_bloc.dart';
+import 'auth/sign_in.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -39,7 +39,7 @@ class Dashboard extends StatelessWidget {
               ),
             ],
           ),
-          body:NotesScreen(),
+          body:NotesPage(),
       
         ));
   }

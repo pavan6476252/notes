@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         create: (context) => NotesBloc(FirebaseFirestore.instance),
         child: 
           MaterialApp(
+            debugShowCheckedModeBanner: false,
             theme: ThemeData(useMaterial3: true),
               home: StreamBuilder<User?>(
                   stream: FirebaseAuth.instance.authStateChanges(),

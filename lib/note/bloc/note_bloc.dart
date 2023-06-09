@@ -29,7 +29,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
 
       emit(NotesLoaded(notes));
     } catch (e) {
-      emit(NotesError('Failed to load notes'));
+      emit(const NotesError('Failed to load notes'));
     }
   }
 
@@ -44,11 +44,10 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       );
 
       await firestore.collection('notes').doc(note.id).set(note.toJson());
-
       emit(NoteAdded());
       add(LoadNotes());  
     } catch (e) {
-      emit(NotesError('Failed to add note'));
+      emit(const NotesError('Failed to add note'));
     }
   }
 
@@ -63,7 +62,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       emit(NoteUpdated());
       add(LoadNotes()); // Reload the content after updating a note
     } catch (e) {
-      emit(NotesError('Failed to update note'));
+      emit(const NotesError('Failed to update note'));
     }
   }
 
@@ -76,7 +75,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       emit(NoteDeleted());
       add(LoadNotes());  
     } catch (e) {
-      emit(NotesError('Failed to delete note'));
+      emit(const NotesError('Failed to delete note'));
     }
   }
 

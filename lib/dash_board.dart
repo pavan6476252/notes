@@ -13,9 +13,7 @@ class Dashboard extends StatelessWidget {
   const Dashboard({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // Getting the user from the FirebaseAuth Instance
-    final user = FirebaseAuth.instance.currentUser!;
+  Widget build(BuildContext context) { 
     return BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is UnAuthenticated) {
